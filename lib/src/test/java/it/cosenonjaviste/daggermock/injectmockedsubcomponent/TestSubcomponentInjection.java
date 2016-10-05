@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 
-public class TestClass {
+public class TestSubcomponentInjection {
 
     @Rule
     public DaggerMockRule<TestRootComponent> rule;
@@ -19,7 +19,10 @@ public class TestClass {
     @Inject
     MainClass mainClass;
 
-    public TestClass() {
+    @Inject
+    ChildClass childClass;
+
+    public TestSubcomponentInjection() {
         ChildComponentModule childComponentModule = new ChildComponentModule();
         rule = new DaggerMockRule<TestRootComponent>(TestRootComponent.class, childComponentModule);
 
@@ -29,8 +32,8 @@ public class TestClass {
                 ChildComponentHolder.set(t.childComponent());
                 TestRootComponentHolder.set(t);
 
-                rule.provides(MainClass.class, Mockito.spy(new MainClass()));
                 rule.provides(ChildClass.class, Mockito.spy(new ChildClass()));
+                rule.provides(MainClass.class, Mockito.spy(new MainClass()));
             }
         });
     }
@@ -43,7 +46,8 @@ public class TestClass {
     @Test
     public void testMasterChildMocking() {
         MockUtil mockUtil = new MockUtil();
-        Assert.assertTrue(mockUtil.isMock(mainClass));
-        Assert.assertTrue(mockUtil.isMock(mainClass.childClass));
+        Assert.assertTrue("Injected MainClass is not mocked", mockUtil.isMock(mainClass));
+        Assert.assertTrue("Injected ChildClass is not mocked", mockUtil.isMock(childClass));
+        Assert.assertTrue("MainClass Injected ChildClass is not mocked", mockUtil.isMock(mainClass.childClass));
     }
 }

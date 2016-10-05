@@ -9,5 +9,5 @@ import dagger.Component;
 public interface TestRootComponent {
     ChildComponent childComponent();
 
-    void inject(TestClass object);
+    void inject(TestSubcomponentInjection object);
 }
